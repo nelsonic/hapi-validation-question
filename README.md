@@ -19,7 +19,7 @@ instead of simply returning the `400` error.
 > "Look at failAction under http://hapijs.com/api#route-options "
 
 See code in:
-[**server.js**](https://github.com/nelsonic/hapi-validation-question/blob/d1b815a9ffe789f588b21b9c5f23dbaaf36758a0/server.js)
+[**server.js**](https://github.com/nelsonic/hapi-validation-question/blob/master/server.js)
 
 So we added `failAction: 'log'` to the `/register` route handler:
 
