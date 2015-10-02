@@ -3,6 +3,7 @@ var Inert  = require('inert');
 var Joi    = require('joi');
 var Vision = require('vision');
 var server = new Hapi.Server({ debug: {"request": ["error", "uncaught"]} })
+var validator = require('validator'); // github.com/chriso/validator.js
 
 var register_fields = {
   name  : Joi.string().alphanum().min(1).required(),
@@ -30,13 +31,21 @@ function extract_validation_error(error){
   return err;
 }
 
+/**
+ * return_values extracts the values the person submitted if they
+ * submitted the form with incomplete or invalid data so that
+ * the form is not "wiped" each time it gets valdiated!
+ * @param {Object} error - see: http://git.io/vciZd
+ * @returns {Object} values - key:value pairs of the fields
+ * with the value sent by the client.
+ */
 function return_values(error) {
   var values;
   if(error.data && error.data._object) { // see: http://git.io/vciZd
     values = {};
     var keys = Object.keys(error.data._object)
     keys.forEach(function(k){
-      values[k] = error.data._object[k];
+      values[k] = validator.escape(error.data._object[k]);
     });
   }
   return values;
@@ -52,9 +61,7 @@ function register_handler(request, reply, source, error) {
     console.log(values);
   }
   return reply.view('index', {
-      title: 'examples/views/handlebars/basic.js | Hapi ' + request.server.version,
-      message: 'Hello World!',
-      name: 'jim',
+      title: 'Please Register ' + request.server.version,
       error: err,
       values: values
   });
