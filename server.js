@@ -30,8 +30,16 @@ function extract_validation_error(error){
   return err;
 }
 
-function return_values(payload) {
-
+function return_values(error) {
+  var values;
+  if(error.data && error.data._object) { // see: http://git.io/vciZd
+    values = {};
+    var keys = Object.keys(error.data._object)
+    keys.forEach(function(k){
+      values[k] = error.data._object[k];
+    });
+  }
+  return values;
 }
 
 function register_handler(request, reply, source, error) {
@@ -40,13 +48,15 @@ function register_handler(request, reply, source, error) {
     console.log(JSON.stringify(error, null, 2));
     err = extract_validation_error(error);
     console.log(err);
-
+    values = return_values(error);
+    console.log(values);
   }
   return reply.view('index', {
       title: 'examples/views/handlebars/basic.js | Hapi ' + request.server.version,
       message: 'Hello World!',
       name: 'jim',
-      error: err
+      error: err,
+      values: values
   });
 }
 
