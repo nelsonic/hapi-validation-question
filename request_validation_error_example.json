@@ -1,0 +1,36 @@
+{
+  "data": {
+    "name": "ValidationError",
+    "details": [
+      {
+        "message": "\"email\" is not allowed to be empty",
+        "path": "email",
+        "type": "any.empty",
+        "context": {
+          "key": "email"
+        }
+      }
+    ],
+    "_object": {
+      "name": "",
+      "email": ""
+    }
+  },
+  "isBoom": true,
+  "isServer": false,
+  "output": {
+    "statusCode": 400,
+    "payload": {
+      "statusCode": 400,
+      "error": "Bad Request",
+      "message": "child \"email\" fails because [\"email\" is not allowed to be empty]",
+      "validation": {
+        "source": "payload",
+        "keys": [
+          "email"
+        ]
+      }
+    },
+    "headers": {}
+  }
+}
