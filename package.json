@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/nelsonic/hapi-validation-question#readme",
   "dependencies": {
-    "handlebars": "^4.0.3",
+    "handlebars": "3.x.x",
     "hapi": "^10.1.0",
     "inert": "^3.0.1",
     "joi": "^6.7.1",

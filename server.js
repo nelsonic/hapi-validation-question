@@ -8,37 +8,46 @@ var register_fields = {
   name  : Joi.string().alphanum().min(1).required(),
   email : Joi.string().email().required()
 };
+console.log(' - - - - - - - - - - - - - - - - - ');
+console.log(register_fields);
+console.log(' - - - - - - - - - - - - - - - - - ');
 
+/**
+ * extract_validation_error does what its name suggests
+ * given that the error is not in a very useable format we
+ * need to extract it into a simple set of key:value pairs
+ * @param {Object} error see: http://git.io/vcwiU
+ * @returns {Object} err - the simplified error object
+ */
 function extract_validation_error(error){
-  var key = error.data.details.path;
-  var err = {
-    key : 'input-error',
+  var key = error.data.details[0].path;
+  // console.log(' >> '+key);
+  err = {}
+  err[key] = {
+    class   : 'input-error',
     message : error.data.details[0].message
   }
   return err;
 }
 
-function register_handler(request, reply, source, error) {
-  if(error && error.data) {
-    console.log(request.payload);
-    console.log(' - - - - - - - - - - - - - - - - - - - - -');
-    console.log(source)
-    console.log(' - - - - - - - - - - - - - - - - - - - - -');
-    console.log(JSON.stringify(error, null, 2))
+function return_values(payload) {
 
-    console.log(error.data.details);
-    var err = extract_validation_error(error);
+}
+
+function register_handler(request, reply, source, error) {
+  var err, values;
+  if(error && error.data) {
+    console.log(JSON.stringify(error, null, 2));
+    err = extract_validation_error(error);
     console.log(err);
+
   }
-    return reply.view('index', {
-        title: 'examples/views/handlebars/basic.js | Hapi ' + request.server.version,
-        message: 'Hello World!',
-        name: "Jim"
-    });
-  //
-  // else {
-  //   return reply('welcome!');
-  // }
+  return reply.view('index', {
+      title: 'examples/views/handlebars/basic.js | Hapi ' + request.server.version,
+      message: 'Hello World!',
+      name: 'jim',
+      error: err
+  });
 }
 
 server.connection({ port: process.env.PORT || 8000 });
@@ -47,16 +56,14 @@ server.register([Vision, Inert], function (err) {
 
   server.views({
       engines: { html: require('handlebars') },
-      path: __dirname
+      path: __dirname +'/'
   });
 
   // console.log(__dirname + '/index.html');
   server.route([{
     method: 'GET',
     path: '/',
-    handler: {
-        file: __dirname + '/index.html'
-    }
+    handler: register_handler
   },
   {
     method: '*',
