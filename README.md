@@ -50,15 +50,50 @@ function register_handler(request, reply, source, error) {
 }
 ```
 
-I am expecting to see an error in the terminal/console
-but when I try to `console.log` the `handler` :
+When we submit the form without any of the required fields we see:
 
 
 ```sh
-- - - - - - - - - - - - - - - - - - - - -
-undefined
-- - - - - - - - - - - - - - - - - - - - -
-undefined
+{ name: '', email: '' }
+ - - - - - - - - - - - - - - - - - - - - -
+payload
+ - - - - - - - - - - - - - - - - - - - - -
+{
+  "data": {
+    "name": "ValidationError",
+    "details": [
+      {
+        "message": "\"email\" is not allowed to be empty",
+        "path": "email",
+        "type": "any.empty",
+        "context": {
+          "key": "email"
+        }
+      }
+    ],
+    "_object": {
+      "name": "",
+      "email": ""
+    }
+  },
+  "isBoom": true,
+  "isServer": false,
+  "output": {
+    "statusCode": 400,
+    "payload": {
+      "statusCode": 400,
+      "error": "Bad Request",
+      "message": "child \"email\" fails because [\"email\" is not allowed to be empty]",
+      "validation": {
+        "source": "payload",
+        "keys": [
+          "email"
+        ]
+      }
+    },
+    "headers": {}
+  }
+}
 ```
 
 I asked the question on GitHub: https://github.com/hapijs/joi/issues/725

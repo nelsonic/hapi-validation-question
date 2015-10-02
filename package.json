@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "PORT=8000 ./node_modules/.bin/nodemon ./server.js"
   },
   "repository": {
     "type": "git",
@@ -22,8 +22,13 @@
   },
   "homepage": "https://github.com/nelsonic/hapi-validation-question#readme",
   "dependencies": {
+    "handlebars": "^4.0.3",
     "hapi": "^10.1.0",
     "inert": "^3.0.1",
-    "joi": "^6.7.1"
+    "joi": "^6.7.1",
+    "vision": "^3.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.7.1"
   }
 }
