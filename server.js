@@ -1,5 +1,4 @@
 var Hapi   = require('hapi');
-var Inert  = require('inert');
 var Joi    = require('joi');
 var Vision = require('vision');
 var server = new Hapi.Server({ debug: {"request": ["error", "uncaught"]} })
@@ -9,9 +8,6 @@ var register_fields = {
   name  : Joi.string().alphanum().min(1).required(),
   email : Joi.string().email().required()
 };
-console.log(' - - - - - - - - - - - - - - - - - ');
-console.log(register_fields);
-console.log(' - - - - - - - - - - - - - - - - - ');
 
 /**
  * extract_validation_error does what its name suggests
@@ -39,7 +35,7 @@ function extract_validation_error(error){
  * @returns {Object} values - key:value pairs of the fields
  * with the value sent by the client.
  */
-function return_values(error) {
+function return_form_input_values(error) {
   var values;
   if(error.data && error.data._object) { // see: http://git.io/vciZd
     values = {};
@@ -52,23 +48,29 @@ function return_values(error) {
 }
 
 function register_handler(request, reply, source, error) {
-  var err, values;
-  if(error && error.data) {
-    console.log(JSON.stringify(error, null, 2));
-    err = extract_validation_error(error);
-    console.log(err);
-    values = return_values(error);
-    console.log(values);
+  var errors, values; // return empty if not set.
+  if(error && error.data) { // means the handler is dual-purpose
+    errors = extract_validation_error(error); // the error field + message
+    values = return_form_input_values(error); // avoid wiping form data
   }
-  return reply.view('index', {
-      title: 'Please Register ' + request.server.version,
-      error: err,
-      values: values
-  });
+  // show the registration form until its submitted correctly
+  if(!request.payload || request.payload && error){
+    return reply.view('registration-form', {
+        title  : 'Please Register ' + request.server.version,
+        error  : errors,
+        values : values
+    });
+  }
+  else { // once successful, show welcome message
+    return reply.view('welcome-message', {
+      name: validator.escape(request.payload.name),
+      email: validator.escape(request.payload.email)
+    })
+  }
 }
 
 server.connection({ port: process.env.PORT || 8000 });
-server.register([Vision, Inert], function (err) {
+server.register(Vision, function (err) {
   if (err) { console.error('Failed to load plugin: ', err); }
 
   server.views({

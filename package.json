@@ -1,6 +1,6 @@
 {
   "name": "hapi-validation-question",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Hapi.js Validation with Joi + failAction question.",
   "main": "server.js",
   "scripts": {
