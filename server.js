@@ -5,7 +5,7 @@ var server = new Hapi.Server({ debug: {"request": ["error", "uncaught"]} })
 var validator = require('validator'); // github.com/chriso/validator.js
 
 var register_fields = {
-  name  : Joi.string().alphanum().min(1).required(),
+  name  : Joi.string().required(),
   email : Joi.string().email().required()
 };
 
