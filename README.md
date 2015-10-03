@@ -22,11 +22,13 @@ rather than returning the `400` error.
 
 And [@MattHarrison](https://github.com/hapijs/joi/issues/725#issuecomment-144867144) elaborated that the `failAction` should be a function.
 
-See code in:
-[**server.js**](https://github.com/nelsonic/hapi-validation-question/blob/master/server.js)
+---
 
-So we added `failAction` which ***re-uses*** the `register_handler`
-so that the `registration-form.html` is shown with any input validation error message:
+## Solution
+
+
+We added `failAction` which ***re-uses*** the `register_handler`
+so that the `registration-form.html` is shown with any input validation error message (*until it is submitted with valid data*)
 
 ```js
 {
@@ -35,7 +37,7 @@ so that the `registration-form.html` is shown with any input validation error me
   config: {
     validate: {
       payload : register_fields,
-      failAction: register_handler
+      failAction: register_handler // register_handler is dual-purpose (see below!)
     }
   },
   handler: register_handler
@@ -46,23 +48,23 @@ the `register_handler` is:
 
 ```js
 function register_handler(request, reply, source, error) {
-  var errors, values; // return empty if not set.
-  if(error && error.data) { // means the handler is dual-purpose
-    errors = extract_validation_error(error); // the error field + message
-    values = return_form_input_values(error); // avoid wiping form data
-  }
-  // show the registration form until its submitted correctly
-  if(!request.payload || request.payload && error){
+  // show the registration form until its submitted with valid data
+  if(!request.payload || request.payload && error) {
+    var errors, values; // return empty if not set.
+    if(error && error.data) { // means the handler is dual-purpose
+      errors = extract_validation_error(error); // the error field + message
+      values = return_form_input_values(error); // avoid wiping form data
+    }
     return reply.view('registration-form', {
-        title  : 'Please Register ' + request.server.version,
-        error  : errors,
-        values : values
+      title  : 'Please Register ' + request.server.version,
+      error  : errors, // error object used in html template
+      values : values  // (escaped) values displayed in form inputs
     });
   }
   else { // once successful, show welcome message!
     return reply.view('welcome-message', {
-      name  : validator.escape(request.payload.name),
-      email : validator.escape(request.payload.email)
+      name   : validator.escape(request.payload.name),
+      email  : validator.escape(request.payload.email)
     })
   }
 }

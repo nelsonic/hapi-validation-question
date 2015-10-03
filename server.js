@@ -46,24 +46,34 @@ function return_form_input_values(error) {
   return values;
 }
 
+/**
+ * register_handler is a dual-purpose handler that initially renders
+ * the registration form but is re-used to display the form with any
+ * Joi validation errors to the client until they input valid info
+ * @param {Object} request - the hapi request object
+ * @param {Object} reply - the standard hapi reply object
+ * @param {String} source - source of the invalid field e.g: 'payload'
+ * @param {Object} error - the error object prepared for the client
+ * response (including the validation function error under error.data
+ */
 function register_handler(request, reply, source, error) {
-  var errors, values; // return empty if not set.
-  if(error && error.data) { // means the handler is dual-purpose
-    errors = extract_validation_error(error); // the error field + message
-    values = return_form_input_values(error); // avoid wiping form data
-  }
   // show the registration form until its submitted correctly
-  if(!request.payload || request.payload && error){
+  if(!request.payload || request.payload && error) {
+    var errors, values; // return empty if not set.
+    if(error && error.data) { // means the handler is dual-purpose
+      errors = extract_validation_error(error); // the error field + message
+      values = return_form_input_values(error); // avoid wiping form data
+    }
     return reply.view('registration-form', {
-        title  : 'Please Register ' + request.server.version,
-        error  : errors,
-        values : values
+      title  : 'Please Register ' + request.server.version,
+      error  : errors, // error object used in html template
+      values : values  // (escaped) values displayed in form inputs
     });
   }
   else { // once successful, show welcome message!
     return reply.view('welcome-message', {
-      name  : validator.escape(request.payload.name),
-      email : validator.escape(request.payload.email)
+      name   : validator.escape(request.payload.name),
+      email  : validator.escape(request.payload.email)
     })
   }
 }
@@ -77,7 +87,6 @@ server.register(Vision, function (err) {
       path: __dirname +'/'
   });
 
-  // console.log(__dirname + '/index.html');
   server.route([{
     method: 'GET',
     path: '/',
