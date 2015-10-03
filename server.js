@@ -18,11 +18,10 @@ var register_fields = {
  */
 function extract_validation_error(error){
   var key = error.data.details[0].path;
-  // console.log(' >> '+key);
   err = {}
   err[key] = {
-    class   : 'input-error',
-    message : error.data.details[0].message
+    class   : 'input-error',                // css class
+    message : error.data.details[0].message // Joi error message
   }
   return err;
 }
@@ -61,10 +60,10 @@ function register_handler(request, reply, source, error) {
         values : values
     });
   }
-  else { // once successful, show welcome message
+  else { // once successful, show welcome message!
     return reply.view('welcome-message', {
-      name: validator.escape(request.payload.name),
-      email: validator.escape(request.payload.email)
+      name  : validator.escape(request.payload.name),
+      email : validator.escape(request.payload.email)
     })
   }
 }

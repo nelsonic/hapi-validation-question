@@ -50,12 +50,20 @@ function register_handler(request, reply, source, error) {
     errors = extract_validation_error(error); // the error field + message
     values = return_form_input_values(error); // avoid wiping form data
   }
-  // if(request.payload)
-  return reply.view('index', {
-      title  : 'Please Register ' + request.server.version,
-      error  : errors,
-      values : values
-  });
+  // show the registration form until its submitted correctly
+  if(!request.payload || request.payload && error){
+    return reply.view('registration-form', {
+        title  : 'Please Register ' + request.server.version,
+        error  : errors,
+        values : values
+    });
+  }
+  else { // once successful, show welcome message!
+    return reply.view('welcome-message', {
+      name  : validator.escape(request.payload.name),
+      email : validator.escape(request.payload.email)
+    })
+  }
 }
 ```
 Where `extract_validation_error(error)` and `return_form_input_values(error)`
