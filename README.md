@@ -27,7 +27,9 @@ And [@MattHarrison](https://github.com/hapijs/joi/issues/725#issuecomment-144867
 ## Solution
 
 [![Build Status](https://travis-ci.org/nelsonic/hapi-validation-question.svg)](https://travis-ci.org/nelsonic/hapi-validation-question)
-
+[![codecov.io](http://codecov.io/github/nelsonic/hapi-validation-question/coverage.svg?branch=master)](http://codecov.io/github/nelsonic/hapi-validation-question?branch=master)
+[![Code Climate](https://codeclimate.com/github/nelsonic/hapi-validation-question/badges/gpa.svg)](https://codeclimate.com/github/nelsonic/hapi-validation-question)
+[![HitCount](https://hitt.herokuapp.com/nelsonic/hapi-validation-question.svg)](https://github.com/nelsonic/hapi-validation-question)
 
 
 We added `failAction` which ***re-uses*** the `register_handler`
