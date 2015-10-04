@@ -1,3 +1,4 @@
+var assert = require('assert');
 var Hapi   = require('hapi');
 var Joi    = require('joi');
 var Vision = require('vision');
@@ -35,14 +36,11 @@ function extract_validation_error(error){
  * with the value sent by the client.
  */
 function return_form_input_values(error) {
-  var values;
-  if(error.data && error.data._object) { // see: http://git.io/vciZd
-    values = {};
-    var keys = Object.keys(error.data._object)
-    keys.forEach(function(k){
-      values[k] = validator.escape(error.data._object[k]);
-    });
-  }
+  var values = {};
+  var keys = Object.keys(error.data._object)
+  keys.forEach(function(k){
+    values[k] = validator.escape(error.data._object[k]);
+  });
   return values;
 }
 
@@ -68,7 +66,7 @@ function register_handler(request, reply, source, error) {
       title  : 'Please Register ' + request.server.version,
       error  : errors, // error object used in html template
       values : values  // (escaped) values displayed in form inputs
-    });
+    }).code(error ? 400 : 200); // HTTP status code depending on error
   }
   else { // once successful, show welcome message!
     return reply.view('welcome-message', {
@@ -80,7 +78,7 @@ function register_handler(request, reply, source, error) {
 
 server.connection({ port: process.env.PORT || 8000 });
 server.register(Vision, function (err) {
-  if (err) { console.error('Failed to load plugin: ', err); }
+  assert(!err, 'Failed to load plugin: ', err); // FATAL ERROR!
 
   server.views({
       engines: { html: require('handlebars') },
@@ -108,3 +106,5 @@ server.register(Vision, function (err) {
 server.start(function() {
   console.log('Visit: http://127.0.0.1:'+server.info.port);
 });
+
+module.exports = server;

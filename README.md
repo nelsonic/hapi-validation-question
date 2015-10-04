@@ -22,9 +22,12 @@ rather than returning the `400` error.
 
 And [@MattHarrison](https://github.com/hapijs/joi/issues/725#issuecomment-144867144) elaborated that the `failAction` should be a function.
 
----
+--- <!-- Copy from here to the End for StackOverflow Answer -->
 
 ## Solution
+
+[![Build Status](https://travis-ci.org/nelsonic/hapi-validation-question.svg)](https://travis-ci.org/nelsonic/hapi-validation-question)
+
 
 
 We added `failAction` which ***re-uses*** the `register_handler`
@@ -48,7 +51,7 @@ the `register_handler` is:
 
 ```js
 function register_handler(request, reply, source, error) {
-  // show the registration form until its submitted with valid data
+  // show the registration form until its submitted correctly
   if(!request.payload || request.payload && error) {
     var errors, values; // return empty if not set.
     if(error && error.data) { // means the handler is dual-purpose
@@ -59,7 +62,7 @@ function register_handler(request, reply, source, error) {
       title  : 'Please Register ' + request.server.version,
       error  : errors, // error object used in html template
       values : values  // (escaped) values displayed in form inputs
-    });
+    }).code(error ? 400 : 200); // HTTP status code depending on error
   }
   else { // once successful, show welcome message!
     return reply.view('welcome-message', {
@@ -70,7 +73,7 @@ function register_handler(request, reply, source, error) {
 }
 ```
 Where `extract_validation_error(error)` and `return_form_input_values(error)`
-are helper functions defined within `server.js` (*but would be split out into view helpers*) which keep our handler function lean.
+are helper functions defined within `server.js` (*but would be split out into re-useable view helpers*) which keep our handler function lean.
 
 When we submit the form without any of the required fields we see:
 
