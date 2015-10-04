@@ -22,7 +22,7 @@ rather than returning the `400` error.
 
 And [@MattHarrison](https://github.com/hapijs/joi/issues/725#issuecomment-144867144) elaborated that the `failAction` should be a function.
 
---- <!-- Copy from here to the End for StackOverflow Answer -->
+---
 
 ## Solution
 
@@ -74,6 +74,8 @@ function register_handler(request, reply, source, error) {
   }
 }
 ```
+> See: [**server.js**:57](https://github.com/nelsonic/hapi-validation-question/blob/master/server.js#L57) for complete file.
+
 Where `extract_validation_error(error)` and `return_form_input_values(error)`
 are helper functions defined within `server.js` (*but would be split out into re-useable view helpers*) which keep our handler function lean.
 
@@ -87,8 +89,18 @@ We also use https://github.com/chriso/validator.js
 to mitigate [Cross Site Scripting](https://en.wikipedia.org/wiki/Cross-site_scripting)
 vulnerability:
 
-Avoids Cross Site Scripting:
 ![register-hack-1of2](https://cloud.githubusercontent.com/assets/194400/10267320/5dd3bad6-6a87-11e5-888b-f1e1dbbf9f39.png)
 
-Displays welcome message on successful registration:
+And display a welcome message on successful registration:
 ![reg-success-1of2](https://cloud.githubusercontent.com/assets/194400/10267355/c7d8a31e-6a88-11e5-8bf9-3bb148e2d870.png)
+
+## Conclusion
+
+We feel that re-using the handler function as the `failAction`
+keeps the code related to this route/action in a single place
+whereas `server.ext('onPreResponse' ...` will introduce "*hooks*"
+which *can* be a source of confusion (*once an app has many such hooks...*)
+
+## #YMMV
+
+Let us know what you think! [![Join the chat at https://gitter.im/dwyl/chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/dwyl/chat/?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
